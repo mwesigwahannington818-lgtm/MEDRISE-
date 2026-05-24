@@ -1,0 +1,12 @@
+node_modules
+dist
+build
+coverage
+.vite
+.DS_Store
+**/node_modules
+**/.cache
+**/dist
+**/build
+**/coverage
+pnpm-lock.yaml

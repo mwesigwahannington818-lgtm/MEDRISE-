@@ -1,0 +1,44 @@
+{
+  "name": "workspace",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm run typecheck && pnpm -r --if-present run build",
+    "dev": "pnpm --filter @workspace/medrise dev",
+    "start": "pnpm --filter @workspace/medrise dev",
+    "lint": "pnpm exec eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "pnpm exec eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "format": "pnpm exec prettier --write .",
+    "format:check": "pnpm exec prettier --check .",
+    "dev:medrise": "pnpm --filter @workspace/medrise dev",
+    "dev:mockup-sandbox": "pnpm --filter @workspace/mockup-sandbox dev",
+    "typecheck:libs": "tsc --build",
+    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+  },
+  "private": true,
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.0.1",
+    "@testing-library/react": "^15.0.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vitejs/plugin-react": "catalog:",
+    "eslint": "^8.58.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.30.0",
+    "eslint-plugin-jsx-a11y": "^7.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-react": "^7.0.0",
+    "eslint-plugin-react-hooks": "^4.7.0",
+    "prettier": "^3.8.3",
+    "typescript": "~5.9.3",
+    "vitest": "^1.6.0",
+    "vite": "catalog:"
+  },
+  "optionalDependencies": {
+    "@esbuild/win32-x64": "^0.27.3",
+    "@rollup/rollup-win32-x64-msvc": "^4.60.4",
+    "@tailwindcss/oxide-win32-x64-msvc": "^4.3.0",
+    "lightningcss-win32-x64-msvc": "^1.32.0"
+  }
+}

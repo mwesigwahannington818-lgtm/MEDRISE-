@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+coverage
+.vite
+**/node_modules
+**/dist
+**/build
+**/coverage
