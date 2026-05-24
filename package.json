@@ -4,7 +4,8 @@
   "packageManager": "pnpm@11.2.2",
   "license": "MIT",
   "scripts": {
-    "build": "pnpm run typecheck && pnpm -r --if-present run build",
+    "build": "pnpm --filter @workspace/medrise build",
+    "build:all": "pnpm run typecheck && pnpm -r --if-present run build",
     "dev": "pnpm --filter @workspace/medrise dev",
     "start": "pnpm --filter @workspace/medrise dev",
     "lint": "pnpm exec eslint . --ext .js,.jsx,.ts,.tsx",
