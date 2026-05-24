@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MedRise Medical Centre
 
 ## Local development
@@ -61,3 +62,7 @@ You can also launch the site with one file:
 - If the dev server is already running, keep the terminal open.
 - If you need to stop it, press `Ctrl+C` in the terminal.
 - The website should be available at `http://localhost:4173/` once started.
+=======
+# MEDRISE-
+MEDICAL CENTRE
+>>>>>>> b7077cbb177b32c8f9ede86c0876d0b745721193
