@@ -1,2 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /patient
+Disallow: /staff
+
+Sitemap: https://medrise-medical-centre-1--medrisemedical1.replit.app/sitemap.xml
