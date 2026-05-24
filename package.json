@@ -15,7 +15,7 @@
     "dev:medrise": "pnpm --filter @workspace/medrise dev",
     "dev:mockup-sandbox": "pnpm --filter @workspace/mockup-sandbox dev",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "pnpm run typecheck:libs && pnpm --filter @workspace/api-server --filter @workspace/medrise --filter ./scripts --if-present run typecheck"
   },
   "private": true,
   "devDependencies": {
