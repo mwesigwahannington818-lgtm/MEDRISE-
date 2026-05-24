@@ -47,3 +47,7 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Ignore generated project archives
+MEDRISE_UPDATED.zip
+
