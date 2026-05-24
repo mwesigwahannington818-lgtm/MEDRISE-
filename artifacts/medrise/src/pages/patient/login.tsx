@@ -1,25 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useLocation, Link } from "wouter";
-import { useListPatients } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/lib/auth";
 import { Stethoscope, Phone, Calendar, ArrowLeft } from "lucide-react";
 import logoBannerPath from "@assets/1778193288147[1]_1779241918471.jpg";
 
 export default function PatientLogin() {
   const [, setLocation] = useLocation();
+  const { patientSession, setPatientSession } = useAuth();
   const [phone, setPhone] = useState("");
   const [dob, setDob] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: patients } = useListPatients({ search: phone } as any, { query: { enabled: false } as any });
+  useEffect(() => {
+    if (patientSession) {
+      setLocation("/patient/portal");
+    }
+  }, [patientSession, setLocation]);
 
-  async function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!phone || !dob) { setError("Please enter your phone number and date of birth."); return; }
+    if (!phone || !dob) {
+      setError("Please enter your phone number and date of birth.");
+      return;
+    }
     setIsLoading(true);
     setError("");
     try {
@@ -31,7 +38,7 @@ export default function PatientLogin() {
           p.dateOfBirth === dob
       );
       if (match) {
-        sessionStorage.setItem("medrise_patient", JSON.stringify({ id: match.id, name: match.fullName, phone: match.phone }));
+        setPatientSession({ id: match.id, name: match.fullName, phone: match.phone });
         setLocation("/patient/portal");
       } else {
         setError("No patient record found with that phone number and date of birth. Please contact the clinic.");

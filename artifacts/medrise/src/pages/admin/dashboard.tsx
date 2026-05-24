@@ -122,7 +122,7 @@ const staffSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   name: z.string().min(2, "Name must be at least 2 characters"),
-  role: z.enum(["owner", "admin", "doctor", "nurse", "midwife", "receptionist", "staff"]),
+  role: z.enum(["admin", "doctor", "nurse", "midwife", "receptionist", "staff"]),
   title: z.string().optional(),
   phone: z.string().optional(),
   email: z.string().email("Invalid email").or(z.literal("")).optional(),
@@ -131,7 +131,7 @@ const staffSchema = z.object({
 const staffEditSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   password: z.string().min(6, "Password must be at least 6 characters").or(z.literal("")).optional(),
-  role: z.enum(["owner", "admin", "doctor", "nurse", "midwife", "receptionist", "staff"]),
+  role: z.enum(["admin", "doctor", "nurse", "midwife", "receptionist", "staff"]),
   title: z.string().optional(),
   phone: z.string().optional(),
   email: z.string().email("Invalid email").or(z.literal("")).optional(),
@@ -695,7 +695,7 @@ export default function AdminDashboard({ isStaffPortal = false }: { isStaffPorta
         data: {
           patientName: appt.patientName,
           queueDate: new Date().toISOString().slice(0, 10),
-          priority: "normal",
+          priority: "non-urgent",
           referralSource: "home",
           notes: `Appointment: ${appt.service}`,
           notificationPhone: appt.phone ?? undefined,
@@ -768,7 +768,7 @@ export default function AdminDashboard({ isStaffPortal = false }: { isStaffPorta
 
   const handleAddStaff = (values: StaffFormValues) => {
     createStaffMutation.mutate(
-      { data: { username: values.username, password: values.password, name: values.name, role: values.role, title: values.title || undefined, phone: values.phone || undefined, email: values.email || undefined } },
+      { data: { username: values.username, password: values.password, name: values.name, role: values.role as any, title: values.title || undefined, phone: values.phone || undefined, email: values.email || undefined } },
       {
         onSuccess: () => {
           toast({ title: "Staff account created" });

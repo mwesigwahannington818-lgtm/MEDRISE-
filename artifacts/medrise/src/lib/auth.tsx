@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useAdminLogout,
@@ -70,22 +70,29 @@ function persistPatientSession(session: PatientSession | null) {
 
 export function AuthProvider({ children }: React.PropsWithChildren<{}>) {
   const queryClient = useQueryClient();
-  const adminToken = getStoredAdminToken();
+  const [adminToken, setAdminTokenState] = useState<string | null>(() => getStoredAdminToken());
   const { data, isLoading, error } = useGetAdminMe({ query: { enabled: !!adminToken, retry: false } as any });
   const logoutMutation = useAdminLogout();
 
   const [patientSession, setPatientSessionState] = useState<PatientSession | null>(() => getStoredPatientSession());
 
+  useEffect(() => {
+    persistAdminToken(adminToken);
+    if (adminToken) {
+      queryClient.invalidateQueries({ queryKey: getGetAdminMeQueryKey() });
+    } else {
+      queryClient.clear();
+    }
+  }, [adminToken, queryClient]);
+
   const setAdminToken = (token: string | null) => {
-    persistAdminToken(token);
-    queryClient.invalidateQueries(getGetAdminMeQueryKey());
+    setAdminTokenState(token);
   };
 
   const signOutAdmin = () => {
     logoutMutation.mutate(undefined, {
       onSettled: () => {
-        persistAdminToken(null);
-        queryClient.invalidateQueries(getGetAdminMeQueryKey());
+        setAdminTokenState(null);
       },
     });
   };

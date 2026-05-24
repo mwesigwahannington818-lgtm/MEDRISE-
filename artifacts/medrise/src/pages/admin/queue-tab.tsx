@@ -479,7 +479,7 @@ export default function QueueTab({ staffId }: { staffId?: number }) {
   const resetRegForm = () => {
     setRegName(""); setRegAge(""); setRegSex(""); setRegPhone(""); setRegEmail("");
     setRegAddress(""); setRegNextOfKinName(""); setRegNextOfKinPhone(""); setRegNextOfKinRel("");
-    setRegInsuranceName(""); setRegInsurancePolicy(""); setRegPriority("normal");
+    setRegInsuranceName(""); setRegInsurancePolicy(""); setRegPriority("non-urgent");
     setRegDept("General OPD"); setRegReferralSource("home"); setRegReferralFacility("");
     setRegNotes(""); setRegStaffId("");
   };

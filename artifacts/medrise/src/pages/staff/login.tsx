@@ -3,7 +3,8 @@ import { Link, useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useAdminLogin, useGetAdminMe } from "@workspace/api-client-react";
+import { useAdminLogin } from "@workspace/api-client-react";
+import { useAuth } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import {
   Form,
@@ -29,16 +30,13 @@ export default function StaffLogin() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const loginMutation = useAdminLogin();
-
-  // If already logged in as medical staff, redirect
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: me, isLoading: isCheckingAuth } = useGetAdminMe({ query: { retry: false } as any });
+  const { adminUser, isAdminLoading: isCheckingAuth, setAdminToken } = useAuth();
 
   React.useEffect(() => {
-    if (me && MEDICAL_ROLES.includes((me as { role?: string }).role ?? "")) {
+    if (adminUser && MEDICAL_ROLES.includes(adminUser.role ?? "")) {
       setLocation("/staff/dashboard");
     }
-  }, [me, setLocation]);
+  }, [adminUser, setLocation]);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -58,14 +56,8 @@ export default function StaffLogin() {
             });
             return;
           }
-          if (role === "owner") {
-            if (data.token) localStorage.setItem("medrise_admin_token", data.token);
-            toast({ title: "Welcome, Dr. Mwesigwa", description: "Redirecting to staff portal..." });
-            setLocation("/staff/dashboard");
-            return;
-          }
           if (data.token) {
-            localStorage.setItem("medrise_admin_token", data.token);
+            setAdminToken(data.token);
           }
           toast({
             title: "Login Successful",

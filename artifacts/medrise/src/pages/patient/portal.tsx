@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation, Link } from "wouter";
+import { useAuth } from "@/lib/auth";
 import { useListConsultations, useListVitals, useListInvoices, useListLabOrders, useListAppointments } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,17 +24,16 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function PatientPortal() {
   const [, setLocation] = useLocation();
-  const [patient, setPatient] = useState<PatientSession | null>(null);
+  const { patientSession, setPatientSession } = useAuth();
   const [activeTab, setActiveTab] = useState<PortalTab>("overview");
   const [expanded, setExpanded] = useState<number | null>(null);
 
-  useEffect(() => {
-    const stored = sessionStorage.getItem("medrise_patient");
-    if (!stored) { setLocation("/patient/login"); return; }
-    setPatient(JSON.parse(stored));
-  }, [setLocation]);
+  const pid = patientSession?.id;
 
-  const pid = patient?.id;
+  if (!patientSession) {
+    setLocation("/patient/login");
+    return null;
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: consultations = [] } = useListConsultations({ patientId: pid } as any, { query: { enabled: !!pid } as any });
@@ -47,15 +47,15 @@ export default function PatientPortal() {
   const { data: appointments = [] } = useListAppointments({ query: { enabled: !!pid } as any });
 
   const myAppointments = appointments.filter(a =>
-    patient && (a.phone === patient.phone || a.patientName.toLowerCase().includes(patient.name.split(" ")[0].toLowerCase()))
+    patientSession && (a.phone === patientSession.phone || a.patientName.toLowerCase().includes(patientSession.name.split(" ")[0].toLowerCase()))
   );
 
   function handleLogout() {
-    sessionStorage.removeItem("medrise_patient");
+    setPatientSession(null);
     setLocation("/patient/login");
   }
 
-  if (!patient) return null;
+  if (!patientSession) return null;
 
   const navItems: { tab: PortalTab; label: string; icon: React.ElementType; count?: number }[] = [
     { tab: "overview", label: "Overview", icon: User },
@@ -73,8 +73,8 @@ export default function PatientPortal() {
         <div className="container mx-auto px-4 py-3 flex items-center gap-4">
           <img src={logoBannerPath} alt="MedRise" className="h-8 rounded" />
           <div className="flex-1">
-            <p className="font-semibold text-gray-900 text-sm">{patient.name}</p>
-            <p className="text-xs text-gray-500">{patient.phone}</p>
+            <p className="font-semibold text-gray-900 text-sm">{patientSession.name}</p>
+            <p className="text-xs text-gray-500">{patientSession.phone}</p>
           </div>
           <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2 text-gray-500 hover:text-red-600">
             <LogOut className="h-4 w-4" /> Sign Out
@@ -107,8 +107,8 @@ export default function PatientPortal() {
           <div>
             <div className="bg-gradient-to-br from-primary to-primary/80 rounded-2xl p-6 text-white mb-6">
               <p className="text-sm opacity-80 mb-1">Welcome back,</p>
-              <h2 className="text-2xl font-bold">{patient.name}</h2>
-              <p className="text-sm opacity-70 mt-1">{patient.phone}</p>
+              <h2 className="text-2xl font-bold">{patientSession.name}</h2>
+              <p className="text-sm opacity-70 mt-1">{patientSession.phone}</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
               {[
@@ -184,7 +184,7 @@ export default function PatientPortal() {
                             variant="outline"
                             className="gap-1.5 text-xs h-8 mt-2 text-blue-700 border-blue-200 hover:bg-blue-50"
                             onClick={() => printPrescription({
-                              patientName: patient.name,
+                              patientName: patientSession.name,
                               visitDate: String(c.visitDate),
                               staffName: c.staffName,
                               chiefComplaint: c.chiefComplaint,
@@ -326,7 +326,7 @@ export default function PatientPortal() {
                             variant="outline"
                             className="gap-1.5 text-xs h-8 mt-2 text-green-700 border-green-200 hover:bg-green-50"
                             onClick={() => printLabResult({
-                              patientName: patient.name,
+                              patientName: patientSession.name,
                               testName: order.testName,
                               orderedAt: String(order.orderedAt),
                               priority: order.priority,
